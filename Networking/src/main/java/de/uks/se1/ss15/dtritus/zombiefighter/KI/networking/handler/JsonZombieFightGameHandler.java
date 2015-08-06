@@ -21,11 +21,6 @@
 
 package de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.handler;
 
-import java.io.IOException;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.VBox;
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.Main;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.gameClient.model.Field;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.gameClient.model.GameUser;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.gameClient.model.Guide;
@@ -33,7 +28,6 @@ import de.uks.se1.ss15.dtritus.zombiefighter.KI.gameClient.model.UserAssets;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.gameClient.model.ZombieFightGame;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.Mediator;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.util.ZFState;
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.MessageHandlerPool;
 import de.uniks.networkparser.json.JsonObject;
 
 public class JsonZombieFightGameHandler extends AbstractHandler {

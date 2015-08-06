@@ -7,4 +7,10 @@
   </parent>
   <artifactId>KI</artifactId>
   <name>KI</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uks.se1.ss15.team-d</groupId>
+  		<artifactId>Networking</artifactId>
+  	</dependency>
+  </dependencies>
 </project>

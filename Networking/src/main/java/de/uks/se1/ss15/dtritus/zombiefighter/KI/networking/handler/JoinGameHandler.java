@@ -21,17 +21,12 @@
 
 package de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.handler;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.Main;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.Mediator;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.ZombieFighter;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.lobby.model.User;
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.MessageHandlerPool;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.VBox;
 
 public class JoinGameHandler extends AbstractHandler {
 

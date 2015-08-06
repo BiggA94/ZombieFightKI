@@ -23,19 +23,11 @@ package de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.handler;
 
 import org.sdmlib.serialization.PropertyChangeInterface;
 
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.Main;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.Mediator;
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.MessageHandlerPool;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.handler.AbstractHandler;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.net.URL;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.layout.VBox;
 
 public class CreateGameHandler extends AbstractHandler implements
 		PropertyChangeInterface {

@@ -7,6 +7,7 @@ import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.Mediator;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.ZombieFighter;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.util.ZFState;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.networking.ServerMessageHandler;
+//import zombiefight.KI.KI;
 
 public class Main {
 	private static ZombieFightThread zombieFightThread;
@@ -20,6 +21,9 @@ public class Main {
 			new Mediator();
 			while (!Thread.interrupted() && shouldRun) {
 				try {
+					if(Mediator.getInstance().getState() == ZFState.INGAME){
+						//KI ki = new KI(Mediator.getInstance().getZombieFighter().getCurrentGame());
+					}
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					e.printStackTrace();

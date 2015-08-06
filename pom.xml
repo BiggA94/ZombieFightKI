@@ -22,5 +22,25 @@
 	<modules>
 		<module>Networking</module>
 		<module>KI</module>
+		
 	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.sdmlib</groupId>
+				<artifactId>SDMLib</artifactId>
+				<version>1.1.505</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uks.se1.ss15.team-d</groupId>
+				<artifactId>KI</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uks.se1.ss15.team-d</groupId>
+				<artifactId>Networking</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
