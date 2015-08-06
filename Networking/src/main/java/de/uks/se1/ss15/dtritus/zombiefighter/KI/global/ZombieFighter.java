@@ -521,10 +521,6 @@ public class ZombieFighter implements PropertyChangeInterface {
 			
 			getPropertyChangeSupport().firePropertyChange(PROPERTY_CURRENTUSER, oldValue, value);
 			changed = true;
-			
-			if(value != null){
-				Mediator.getInstance().setState(ZFState.LOGGED_IN);
-			}
 		}
 
 		return changed;
