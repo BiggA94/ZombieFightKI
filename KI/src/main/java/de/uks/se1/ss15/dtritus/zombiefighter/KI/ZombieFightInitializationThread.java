@@ -48,25 +48,45 @@ public class ZombieFightInitializationThread implements Runnable {
 	public void run() {
 		try {
 			new Mediator();
-			if(Mediator.getInstance().getState().equals(ZFState.STARTED)){
+			if (Mediator.getInstance().getState().equals(ZFState.STARTED)) {
 				Mediator.getInstance().connect();
 			}
 			parseArgs(args);
 
-			while (!Thread.interrupted()) {
-				if (Mediator.getInstance().getState() == ZFState.INGAME_WAITING) {
-					break;
+			synchronized (this) {
+				if (Mediator.getInstance().getState().equals(ZFState.INGAME_WAITING)) {
+					return;
 				}
-				Thread.sleep(1000);
+				// Wait until ingame
+				Mediator.getInstance().getPropertyChangeSupport().addPropertyChangeListener(Mediator.PROPERTY_STATE,
+						new PropertyChangeListener() {
+							@Override
+							public void propertyChange(PropertyChangeEvent evt) {
+								if (evt.getNewValue() != null && evt.getNewValue().equals(ZFState.INGAME_WAITING)) {
+									synchronized (ZombieFightInitializationThread.this) {
+										// Wakeup the Thread
+										ZombieFightInitializationThread.this.notifyAll();
+									}
+									Mediator.getInstance().getPropertyChangeSupport()
+											.removePropertyChangeListener(this);
+								}
+							}
+						});
+				wait();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			ki.close();
 		} catch (ConnectException e) {
 			e.printStackTrace();
+			ki.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			ki.close();
 		}
 	}
 
-	public void parseArgs(String[] args) throws InterruptedException {
+	public void parseArgs(String[] args) throws Exception {
 		String username = null;
 		String password = null;
 		String game = null;
@@ -102,14 +122,20 @@ public class ZombieFightInitializationThread implements Runnable {
 		// If username and password were set
 		if (username != null && password != null) {
 			login(username, password);
+		} else {
+			throw new Exception("Username and/or Password not set");
 		}
 		// Join Game
 		if (game != null) {
 			joinGame(game);
+		} else {
+			throw new Exception("Game not set");
 		}
 		// Select Field
 		if (field != null) {
 			selectField(field);
+		} else {
+			throw new Exception("Field not set");
 		}
 
 	}
