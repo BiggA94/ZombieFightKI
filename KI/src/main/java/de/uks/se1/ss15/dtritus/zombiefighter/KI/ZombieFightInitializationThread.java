@@ -129,6 +129,7 @@ public class ZombieFightInitializationThread implements Runnable {
 		if (game != null) {
 			joinGame(game);
 		} else {
+
 			throw new Exception("Game not set");
 		}
 		// Select Field
