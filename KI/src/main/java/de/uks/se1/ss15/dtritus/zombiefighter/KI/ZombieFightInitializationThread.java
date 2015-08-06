@@ -48,7 +48,7 @@ public class ZombieFightInitializationThread implements Runnable {
 	public void run() {
 		try {
 			new Mediator();
-			if(Mediator.getInstance().getState().equals(ZFState.STARTED)){
+			if (Mediator.getInstance().getState().equals(ZFState.STARTED)) {
 				Mediator.getInstance().connect();
 			}
 			parseArgs(args);
@@ -102,14 +102,20 @@ public class ZombieFightInitializationThread implements Runnable {
 		// If username and password were set
 		if (username != null && password != null) {
 			login(username, password);
+		} else {
+			return;
 		}
 		// Join Game
 		if (game != null) {
 			joinGame(game);
+		} else {
+			return;
 		}
 		// Select Field
 		if (field != null) {
 			selectField(field);
+		} else {
+			return;
 		}
 
 	}
