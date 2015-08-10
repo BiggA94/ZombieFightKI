@@ -1,35 +1,47 @@
 package de.uks.se1.ss15.dtritus.zombiefighter.KI;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.reflections.Reflections;
 
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.Agents.Agent;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.gameClient.model.ZombieFightGame;
+import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.Mediator;
+import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ActionList;
+import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ThreadPool;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ZFAction;
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ZFActions;
-import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ZFActionParameters.ZFParamSendZombie;
 
 public class AgentController {
 
-	public AgentController() {
-		// TODO Auto-generated constructor stub
+	private ThreadPool threadPool;
+	private int iterations = 1;
+
+	public AgentController(int iterations) {
+		this.iterations = iterations;
+		initializeAgents();
+		threadPool = new ThreadPool(getAgents().size(), getAgents().size() * this.iterations, 5000,
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
+
 	LinkedHashMap<String, Agent> Agents = new LinkedHashMap<>();
 
 	public LinkedHashMap<String, Agent> getAgents() {
 		return Agents;
 	}
 
-	public Object removeAgent(String key) {
+	public Agent removeAgent(String key) {
 		return getAgents().remove(key);
 	}
 
-	public Object addAgent(String key, Agent value) {
+	public Agent addAgent(String key, Agent value) {
 		return getAgents().put(key, value);
 	}
-	
+
 	/**
 	 * Loads all Classes in the Agent package, that are subclasses of Agent
 	 */
@@ -38,11 +50,18 @@ public class AgentController {
 		Reflections reflections = new Reflections("de.uks.se1.ss15.dtritus.zombiefighter.KI.Agents");
 		Set<Class<? extends Agent>> allAgentClasses = reflections.getSubTypesOf(Agent.class);
 
+		ClassLoader classLoader = this.getClass().getClassLoader();
+
 		// And now Instantiate them
 		for (Class<? extends Agent> class1 : allAgentClasses) {
 			try {
 				// And Put them in Agents
-				initializeAgents(class1.newInstance());
+				try {
+					initializeAgents(class1.getConstructor().newInstance());
+				} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+						| SecurityException e) {
+					e.printStackTrace();
+				}
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -57,8 +76,27 @@ public class AgentController {
 		}
 	}
 
-	public static ZFAction calculateAction(ZombieFightGame game) {
-		return new ZFAction(ZFActions.SEND_ZOMBIE, new ZFParamSendZombie(game));
+	public ActionList calculateAction(ZombieFightGame game) {
+		LinkedHashMap<String, Agent> agents = getAgents();
+		Collection<Agent> values = agents.values();
+
+		// Default Return Value
+		ActionList actionList = new ActionList();
+
+		for (Agent agent : values) {
+			actionList = agent.calculateAction(calculateModel(new ActionList()));
+		}
+
+		return actionList;
+	}
+
+	private ZombieFightGame calculateModel(ActionList actions) {
+
+		return Mediator.getInstance().getZombieFighter().getCurrentGame();
+	}
+
+	public void shutdown() {
+		threadPool.shutdown();
 	}
 
 }

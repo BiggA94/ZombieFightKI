@@ -2,14 +2,14 @@ package de.uks.se1.ss15.dtritus.zombiefighter.KI.util;
 
 import java.util.LinkedList;
 
-public class AgentReturnValue implements Cloneable {
+public class ActionList implements Cloneable {
 	LinkedList<ZFAction> ActionHistory = new LinkedList<>();
 
 	public LinkedList<ZFAction> getActionHistory() {
 		return ActionHistory;
 	}
 
-	long rating;
+	long rating = 1000;
 
 	public long getRating() {
 		return rating;
