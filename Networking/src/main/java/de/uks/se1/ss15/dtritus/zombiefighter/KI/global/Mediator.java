@@ -351,43 +351,21 @@ public class Mediator implements PropertyChangeInterface {
 		}
 
 		// INGAME_RUNNNING
-		this.getPropertyChangeSupport().addPropertyChangeListener(Mediator.PROPERTY_STATE,
-				new PropertyChangeListener() {
-					// Add after joined and ingame
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						if (evt.getOldValue() == ZFState.INGAME_WAITING) {
-							boolean running = Mediator.getInstance().getZombieFighter().getCurrentGame().getRunning();
-							if (running) {
-								Mediator.getInstance().setState(ZFState.INGAME_RUNNING);
-							} else {
-								Mediator.getInstance().getZombieFighter().getCurrentGame();
-								// Add Property Change to RUNNING
-								Mediator.getInstance().getZombieFighter().getCurrentGame().getPropertyChangeSupport()
-										.addPropertyChangeListener(ZombieFightGame.PROPERTY_RUNNING,
-												new PropertyChangeListener() {
-
-									@Override
-									public void propertyChange(PropertyChangeEvent evt) {
-										if (evt.getNewValue() != null && evt.getNewValue().equals(true)) {
-											// Game Starts
-											Mediator.getInstance().setState(ZFState.INGAME_RUNNING);
-											// Don't remove Listener, because it
-											// is also waiting for the game to
-											// stop
-										} else {
-											// Game ends and isn't running
-											// anymore
-											Mediator.getInstance().setState(ZFState.INGAME_STOPPED);
-											Mediator.getInstance().getZombieFighter().getCurrentGame()
-													.getPropertyChangeSupport().removePropertyChangeListener(this);
-										}
-									}
-								});
+		if (this.getState().equals(ZFState.INGAME_WAITING)) {
+			initializeStateListener_IngameWaiting();
+		} else {
+			this.getPropertyChangeSupport().addPropertyChangeListener(Mediator.PROPERTY_STATE,
+					new PropertyChangeListener() {
+						// Add after joined and ingame
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							if (evt.getNewValue() != null && evt.getNewValue() == ZFState.INGAME_WAITING) {
+								initializeStateListener_IngameRunning();
+								Mediator.getInstance().getPropertyChangeSupport().removePropertyChangeListener(this);
 							}
 						}
-					}
-				});
+					});
+		}
 
 		// INGAME_WAITING
 		if (this.getState().equals(ZFState.FIELD_SELECTION)) {
@@ -484,12 +462,43 @@ public class Mediator implements PropertyChangeInterface {
 								if (evt.getOldValue() != null && evt.getOldValue().equals(userAsset)
 										&& !userAsset.equals(evt.getNewValue())) {
 									Mediator.getInstance().setState(ZFState.GAME_LEFT);
-									Mediator.getInstance().getZombieFighter().getCurrentGame().getPropertyChangeSupport().removePropertyChangeListener(this);
+									Mediator.getInstance().getZombieFighter().getCurrentGame()
+											.getPropertyChangeSupport().removePropertyChangeListener(this);
 								}
 
 							}
 						});
 			}
+		}
+	}
+
+	private void initializeStateListener_IngameRunning() {
+		boolean running = Mediator.getInstance().getZombieFighter().getCurrentGame().getRunning();
+		if (running) {
+			Mediator.getInstance().setState(ZFState.INGAME_RUNNING);
+		} else {
+			// Add Property Change to RUNNING
+			Mediator.getInstance().getZombieFighter().getCurrentGame().getPropertyChangeSupport()
+					.addPropertyChangeListener(ZombieFightGame.PROPERTY_RUNNING, new PropertyChangeListener() {
+
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							if (evt.getNewValue() != null && evt.getNewValue().equals(true)) {
+								// Game Starts
+								Mediator.getInstance().setState(ZFState.INGAME_RUNNING);
+								// Don't remove Listener, because it
+								// is also waiting for the game to
+								// stop
+							} else if (evt.getOldValue() != null && evt.getOldValue().equals(true)
+									&& evt.getNewValue() != null && evt.getNewValue().equals(false)) {
+								// Game ends and isn't running
+								// anymore
+								Mediator.getInstance().setState(ZFState.INGAME_STOPPED);
+								Mediator.getInstance().getZombieFighter().getCurrentGame().getPropertyChangeSupport()
+										.removePropertyChangeListener(this);
+							}
+						}
+					});
 		}
 	}
 }

@@ -27,14 +27,13 @@ public class ZombieFightGame implements PropertyChangeInterface {
 			return null;
 
 		for (ZombieFightGame currentInstance : instances) {
-			if (currentInstance.getId() != null
-					&& currentInstance.getId().equals(id)) {
+			if (currentInstance.getId() != null && currentInstance.getId().equals(id)) {
 				return currentInstance;
 			}
 		}
 		return null;
 	}
-	
+
 	public static boolean removeInstanceById(String id) {
 		LinkedList<ZombieFightGame> list = new LinkedList<ZombieFightGame>();
 		list.add(getInstanceById(id));
@@ -53,8 +52,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setId(String value) {
 		String oldValue = this.getId();
 		this.id = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue,
-				value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue, value);
 	}
 
 	public ZombieFightGame withId(String value) {
@@ -86,8 +84,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setName(String value) {
 		String oldValue = this.getName();
 		this.name = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_NAME, oldValue,
-				value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_NAME, oldValue, value);
 	}
 
 	public ZombieFightGame withName(String value) {
@@ -107,8 +104,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setNumPlayers(int value) {
 		int oldValue = this.getNumPlayers();
 		this.numPlayers = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_NUM_PLAYERS,
-				oldValue, value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_NUM_PLAYERS, oldValue, value);
 	}
 
 	public ZombieFightGame withNumPlayers(int value) {
@@ -128,8 +124,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setRunning(boolean value) {
 		boolean oldValue = this.getRunning();
 		this.running = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_RUNNING,
-				oldValue, value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_RUNNING, oldValue, value);
 	}
 
 	public ZombieFightGame withRunning(boolean value) {
@@ -149,8 +144,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setTestGame(boolean value) {
 		boolean oldValue = this.getTestGame();
 		this.testGame = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_TEST_GAME,
-				oldValue, value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_TEST_GAME, oldValue, value);
 	}
 
 	public ZombieFightGame withTestGame(boolean value) {
@@ -170,8 +164,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setNextIncome(double value) {
 		double oldValue = this.getNextIncome();
 		this.nextIncome = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_NEXT_INCOME,
-				oldValue, value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_NEXT_INCOME, oldValue, value);
 	}
 
 	public ZombieFightGame withNextIncome(double value) {
@@ -191,8 +184,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 	public void setSpeed(double value) {
 		double oldValue = this.getSpeed();
 		this.speed = value;
-		getPropertyChangeSupport().firePropertyChange(PROPERTY_SPEED, oldValue,
-				value);
+		getPropertyChangeSupport().firePropertyChange(PROPERTY_SPEED, oldValue, value);
 	}
 
 	public ZombieFightGame withSpeed(double value) {
@@ -227,8 +219,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 
 				if (changed) {
 					item.withGame(this);
-					getPropertyChangeSupport().firePropertyChange(
-							PROPERTY_USERS, null, item);
+					getPropertyChangeSupport().firePropertyChange(PROPERTY_USERS, null, item);
 				}
 			}
 		}
@@ -240,8 +231,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 			if ((this.users != null) && (item != null)) {
 				if (this.users.remove(item)) {
 					item.withGame(null);
-					getPropertyChangeSupport().firePropertyChange(
-							PROPERTY_USERS, item, null);
+					getPropertyChangeSupport().firePropertyChange(PROPERTY_USERS, item, null);
 				}
 			}
 		}
@@ -281,8 +271,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 
 				if (changed) {
 					item.withGame(this);
-					getPropertyChangeSupport().firePropertyChange(
-							PROPERTY_USERS, null, item);
+					getPropertyChangeSupport().firePropertyChange(PROPERTY_USERS, null, item);
 				}
 			}
 		}
@@ -294,8 +283,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 			if ((this.fields != null) && (item != null)) {
 				if (this.fields.remove(item)) {
 					item.withGame(null);
-					getPropertyChangeSupport().firePropertyChange(
-							PROPERTY_USERS, item, null);
+					getPropertyChangeSupport().firePropertyChange(PROPERTY_USERS, item, null);
 				}
 			}
 		}
@@ -325,8 +313,7 @@ public class ZombieFightGame implements PropertyChangeInterface {
 
 			this.guide = value;
 
-			getPropertyChangeSupport().firePropertyChange(PROPERTY_GUIDE,
-					oldValue, value);
+			getPropertyChangeSupport().firePropertyChange(PROPERTY_GUIDE, oldValue, value);
 			changed = true;
 		}
 
@@ -343,38 +330,36 @@ public class ZombieFightGame implements PropertyChangeInterface {
 		this.withGuide(newValue);
 		return newValue;
 	}
-	
-	
+
 	// winner:0..1 Link to Winner
 	public static final String PROPERTY_WINNER = "winner";
-	
+
 	private GameUser winner = null;
-	
+
 	public GameUser getWinner() {
 		return this.winner;
 	}
-	
+
 	public boolean setWinner(GameUser value) {
 		boolean changed = false;
-		
+
 		if (this.winner != value) {
 			GameUser oldValue = this.winner;
-			
+
 			this.winner = value;
-			
-			getPropertyChangeSupport().firePropertyChange(PROPERTY_WINNER,
-					oldValue, value);
+
+			getPropertyChangeSupport().firePropertyChange(PROPERTY_WINNER, oldValue, value);
 			changed = true;
 		}
-		
+
 		return changed;
 	}
-	
+
 	public ZombieFightGame withWinner(GameUser value) {
 		this.setWinner(value);
 		return this;
 	}
-	
+
 	public GameUser createWinner() {
 		GameUser newValue = new GameUser();
 		this.withWinner(newValue);

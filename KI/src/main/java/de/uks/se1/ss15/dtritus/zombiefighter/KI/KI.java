@@ -3,17 +3,26 @@ package de.uks.se1.ss15.dtritus.zombiefighter.KI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.reflections.Reflections;
 
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.Agents.Agent;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.Mediator;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.global.util.ZFState;
 import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ThreadPool;
+import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ZFAction;
+import de.uks.se1.ss15.dtritus.zombiefighter.KI.util.ZFActionParameters.ZFParamSendZombie;
 
 /**
  * @author Alexander
@@ -23,6 +32,8 @@ public class KI {
 
 	static ZombieFightInitializationThread zombieFightInitializationThread;
 	private ThreadPool threadPool;
+	private ScheduledExecutorService agentRunnerThreadPool;
+	private ScheduledFuture<?> scheduledFuture;
 
 	/**
 	 * See also{@link ZombieFightInitializationThread}<br/>
@@ -41,27 +52,62 @@ public class KI {
 		Future<Boolean> zombieFightInitialization = threadPool.submit(zombieFightInitializationThread, true);
 		// Wait for the Thread to be Finished
 		zombieFightInitialization.get();
+		agentRunnerThreadPool = Executors.newScheduledThreadPool(1);
+		scheduledFuture = agentRunnerThreadPool.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				if (Mediator.getInstance().getState().equals(ZFState.INGAME_STOPPED)
+						|| Mediator.getInstance().getState().equals(ZFState.GAME_LEFT)) {
+					KI.this.scheduledFuture.cancel(true);
+				}
+				if (!Mediator.getInstance().getState().equals(ZFState.INGAME_RUNNING)) {
+					return;
+				}
+				ZFAction calculateAction = AgentController
+						.calculateAction(Mediator.getInstance().getZombieFighter().getCurrentGame());
+				doAction(calculateAction);
+			}
+		}, 5000, 100, TimeUnit.MILLISECONDS);
+		try {
+			scheduledFuture.get();
+		} catch (CancellationException e) {
 
-		initializeAgents();
+		} catch (Exception e) {
+
+		}
+
 	}
 
-	private void initializeAgents() {
-		// TODO initializeAgents(new XYAgent());
-	}
+	private void doAction(ZFAction zfAction) {
+		while (!Mediator.getInstance().getZombieFighter().getServerMessageHandler().getSendBuffer().isEmpty()
+				&& !Mediator.getInstance().getZombieFighter().getServerMessageHandler().isLastMessageHandled()) {
+			// wait
+		}
+		switch (zfAction.getAction()) {
+		case SEND_ZOMBIE:
+			if (((ZFParamSendZombie) zfAction.getParameter()).getZombieType() == null) {
+				// Mediator.printDebugln("KI.doAction(): Action = SEND_ZOMBIE,
+				// but ZombieType is null");
+				break;
+			}
+			sendString("{\"@action\":\"CREATE_ZOMBIE\",\"properties\":{\"entry\":{\"key\":\"zombietype\",\"value\":\""
+					+ ((ZFParamSendZombie) zfAction.getParameter()).getZombieType().getKey() + "\"}}}");
+			break;
 
-	private void initializeAgents(Agent... agents) {
-		for (Agent agent : agents) {
-			addAgent(agent.getName(), agent);
+		default:
+			break;
 		}
 	}
 
 	protected boolean sendString(String message) {
+		if (!Mediator.getInstance().isConnected())
+			return false;
 		return Mediator.getInstance().getZombieFighter().getServerMessageHandler().sendString(message);
 	}
 
 	public void close() {
 		ZFState state = Mediator.getInstance().getState();
-		if (state.equals(ZFState.STOPPED)) {
+		if (state.equals(ZFState.STOPPED) || state.equals(ZFState.STARTED)) {
 			return;
 		} else {
 			if (!state.equals(ZFState.GAME_LEFT) && !state.equals(ZFState.STOPPED)
@@ -81,19 +127,7 @@ public class KI {
 			}
 		}
 		threadPool.shutdown();
+		agentRunnerThreadPool.shutdown();
 	}
 
-	LinkedHashMap<String, Agent> Agents = new LinkedHashMap<>();
-
-	public LinkedHashMap<String, Agent> getAgents() {
-		return Agents;
-	}
-
-	public Object removeAgent(String key) {
-		return getAgents().remove(key);
-	}
-
-	public Object addAgent(String key, Agent value) {
-		return getAgents().put(key, value);
-	}
 }

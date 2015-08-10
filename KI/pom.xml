@@ -12,5 +12,10 @@
   		<groupId>de.uks.se1.ss15.team-d</groupId>
   		<artifactId>Networking</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>org.reflections</groupId>
+  		<artifactId>reflections</artifactId>
+  		<version>0.9.10</version>
+  	</dependency>
   </dependencies>
 </project>
